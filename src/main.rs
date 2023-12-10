@@ -3,6 +3,8 @@ use serde::Deserialize;
 
 #[macro_use] extern crate rocket;
 
+pub mod graph;
+
 #[get("/")]
 fn index() -> Json<ConfigResponse> {
     Json(ConfigResponse {
@@ -36,6 +38,7 @@ fn move_handler(game_state: Json<GameState>) -> Json<TurnResponse> {
 fn rocket() -> _ {
     rocket::build().mount("/", routes![index, start_handler, end_handler, move_handler])
 }
+
 
 /// Game state of any given turn.
 /// 
