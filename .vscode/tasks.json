@@ -1,0 +1,17 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run battlesnake",
+            "type": "shell",
+            "command": "battlesnake play -W 11 -H 11 --name 'Rust battlesnake' --url http://localhost:8000 -g solo --browser"
+        },
+        {
+            "label": "watch",
+            "type": "shell",
+            "command": "cargo watch -x run"
+        }
+    ]
+}
