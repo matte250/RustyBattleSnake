@@ -1,11 +1,8 @@
 use index_vec::IndexVec;
-use serde_json::value::Index;
 
 use crate::{GameState, BattleSnake};
 
 index_vec::define_index_type! {
-    // Define StrIdx to use only 32 bits internally (you can use usize, u16,
-    // and even u8).
     pub struct NodeIdx = u32;
 }
 
