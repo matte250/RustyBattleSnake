@@ -19,21 +19,29 @@ impl Graph {
         let n_height = usize::try_from(game_state.board.height).unwrap();
         let n_width = usize::try_from(game_state.board.width).unwrap();
         let mut nodes: IndexVec<NodeIdx, IndexVec<NodeIdx, Node>> = 
-            index_vec::index_vec![index_vec::index_vec![Node::Empty; n_width]; n_height];
+            index_vec::index_vec![index_vec::index_vec![Node::new(0, 0, NodeType::Empty); n_width]; n_height];
 
         for coord in &game_state.board.food {
             let node = nodes.get_node_mut(coord.x, coord.y);
-            *node = Node::Food; 
+            *node = Node::new(coord.x, coord.y, NodeType::Food); 
         }
 
-        for snakes in &game_state.board.snakes {
-            for coord in &snakes.body {
+        for coord in &game_state.board.hazards {
+            let node = nodes.get_node_mut(coord.x, coord.y);
+            *node = Node::new(coord.x, coord.y, NodeType::Hazard);
+        }
+
+        for snake in &game_state.board.snakes {
+            for coord in &snake.body {
                 let node = nodes.get_node_mut(coord.x, coord.y);
-                let rc_snakes_id: std::rc::Rc<String> = std::rc::Rc::new(snakes.id.clone());
-                *node = Node::Snake(rc_snakes_id); 
+                *node = Node::new(coord.x, coord.y, NodeType::SnakeBody(snake.clone())); 
             }
-        }
 
+            let coord = &snake.head;
+            let node = nodes.get_node_mut(coord.x, coord.y);
+            *node = Node::new(coord.x, coord.y, NodeType::SnakeHead(snake.clone()));
+        }
+        
         return Self {
             nodes
         }
@@ -58,8 +66,27 @@ impl NodeIndex for IndexVec<NodeIdx, IndexVec<NodeIdx, Node>> {
 }
 
 #[derive(Clone)]
-enum Node {
+struct Node {
+    x: u32,
+    y: u32,
+    node_type: NodeType
+}
+
+impl Node {
+    fn new(x: u32, y: u32, node_type: NodeType) -> Self {
+        return Self {
+            x,
+            y,
+            node_type
+        }
+    }
+}
+
+#[derive(Clone)]
+enum NodeType {
     Empty,
     Food,
-    Snake(std::rc::Rc<String>),
+    SnakeBody(std::rc::Rc<BattleSnake>),
+    SnakeHead(std::rc::Rc<BattleSnake>),
+    Hazard
 }
