@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use rocket::serde::{Serialize, json::Json};
 use serde::Deserialize;
 
@@ -50,16 +52,16 @@ fn rocket() -> _ {
 struct GameState
 {
     /// Game object describing the game being played.
-    game: Game,
+    game: Rc<Game>,
 
     /// Turn number of the game being played. Is 0 for new games.
     turn: u32,
 
     /// Board object describing the game board on this turn.
-    board: Board,
+    board: Rc<Board>,
 
     /// Battlesnake object describing your BattleSnake.
-    you: BattleSnake,
+    you: Rc<BattleSnake>,
 }
 
 /// https://docs.battlesnake.com/api/objects/game
@@ -67,14 +69,14 @@ struct GameState
 struct Game
 {
     /// A unique identifier for the this game.
-    id: String,
+    id: Rc<str>,
 
     /// Information about the rule set being used to run this game.
     #[serde(rename = "ruleset")]
     rule_set: serde_json::Map<String, serde_json::Value>,
 
     /// The name of the map used to populate the game board with snakes, food, and hazards.
-    map: String,
+    map: Rc<str>,
 
     /// (milliseconds) How much time your snake has to respond to requests for this game.
     timeout: u32,
@@ -85,7 +87,7 @@ struct Game
     /// - arena
     /// - challenge
     /// - custom
-    source: String,
+    source: Rc<str>,
 }
 
 /// https://docs.battlesnake.com/api/objects/board
@@ -98,47 +100,47 @@ struct Board {
     width: u32,
 
     /// Array of coordinates representing food locations on the game board. Example:
-    food: Vec<Coord>,
+    food: Vec<Rc<Coord>>,
 
     /// Array of coordinates representing hazardous locations on the game board. These will only appear in some [game modes](https://docs.battlesnake.com/guides/playing/modes).
-    hazards: Vec<Coord>,
+    hazards: Vec<Rc<Coord>>,
 
     /// Array of Battlesnake Objects representing all Battlesnakes remaining on the game board (including yourself if you haven't been eliminated).
-    snakes: Vec<BattleSnake>
+    snakes: Vec<Rc<BattleSnake>>
 }
 
 /// https://docs.battlesnake.com/api/objects/battlesnake
 #[derive(Deserialize)]
 struct BattleSnake {
     /// Unique identifier for this Battlesnake in the context of the current Game.
-    id: String,
+    id: Rc<str>,
 
     /// Name given to this Battlesnake by its author.
-    name: String,
+    name: Rc<str>,
 
     /// Health value of this Battlesnake, between 0 and 100 inclusively.
     health: u32,
 
     /// Array of coordinates representing this Battlesnake's location on the game board. This array is ordered from head to tail.
-    body: Vec<Coord>,
+    body: Vec<Rc<Coord>>,
 
     /// The previous response time of this Battlesnake, in milliseconds. If the Battlesnake timed out and failed to respond, the game timeout will be returned (game.timeout)
-    latency: String,
+    latency: Rc<str>,
 
     /// Coordinates for this Battlesnake's head. Equivalent to the first element of the body array.
-    head: Coord,
+    head: Rc<Coord>,
 
     /// Length of this Battlesnake from head to tail. Equivalent to the length of the body array.
     length: u32, 
 
     /// Message shouted by this Battlesnake on the previous turn.
-    shout: String,
+    shout: Rc<str>,
 
     /// The squad that the Battlesnake belongs to. Used to identify squad members in Squad Mode games.
-    squad: String,
+    squad: Rc<str>,
 
     /// The collection of customizations that control how this Battlesnake is displayed.     
-    customizations: Customizations,
+    customizations: Rc<Customizations>,
 }
 
 #[derive(Deserialize)]
